@@ -1,4 +1,5 @@
 using BancoDoBrasil.Dtos.Boleto.Registrar;
+using BancoDoBrasil.Exceptions;
 
 public static class MultaBussinessValidator
 {
@@ -29,14 +30,14 @@ public static class MultaBussinessValidator
             return;
 
         if (multa.data.HasValue || multa.valor.HasValue || multa.porcentagem.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "Quando o tipo da multa for 0 (dispensar), nenhum outro campo deve ser informado.");
     }
 
     private static void ValidarDataObrigatoria(MultaDto multa)
     {
         if (multa.tipo is 1 or 2 && !multa.data.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "A data da multa é obrigatória quando o tipo for 1 ou 2.");
     }
 
@@ -55,12 +56,12 @@ public static class MultaBussinessValidator
                 : (DateTime?)null;
 
         if (multa.data!.Value.Date <= dataVencimento)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "A data da multa deve ser posterior à data de vencimento do boleto.");
 
         if (dataLimiteRecebimento.HasValue &&
             multa.data.Value.Date > dataLimiteRecebimento.Value.Date)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "A data da multa deve ser anterior ou igual à data limite de recebimento do boleto vencido.");
     }
 
@@ -70,11 +71,11 @@ public static class MultaBussinessValidator
             return;
 
         if (!multa.valor.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "O valor da multa é obrigatório quando o tipo for 1 (valor fixo).");
 
         if (multa.porcentagem.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "Não informe porcentagem quando o tipo da multa for 1.");
     }
 
@@ -84,11 +85,11 @@ public static class MultaBussinessValidator
             return;
 
         if (!multa.porcentagem.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "A porcentagem da multa é obrigatória quando o tipo for 2 (percentual).");
 
         if (multa.valor.HasValue)
-            throw new ArgumentException(
+            throw new BancoDoBrasilValidationException(
                 "Não informe valor quando o tipo da multa for 2.");
     }
 }

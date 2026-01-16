@@ -3,7 +3,7 @@ using BancoDoBrasil.Exceptions;
 
 namespace BancoDoBrasil.Validation.Structure;
 
-internal static class RegistrarBoletoStructureValidator
+public static class RegistrarBoletoStructureValidator
 {
     public static void Validate(RegistrarBoletoRequest r)
     {

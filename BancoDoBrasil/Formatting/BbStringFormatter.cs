@@ -2,9 +2,9 @@ namespace BancoDoBrasil.Formatting;
 
 internal static class BbStringFormatter
 {
-    public static string Normalize(string value, int max)
+    public static string NormalizeUpper(string? value, int max)
     {
-        var v = value.Trim().ToUpperInvariant();
+        var v = (value ?? string.Empty).Trim().ToUpperInvariant();
         return v.Length > max ? v[..max] : v;
     }
 

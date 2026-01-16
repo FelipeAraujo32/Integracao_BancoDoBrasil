@@ -8,20 +8,12 @@ using BancoDoBrasil.Validation.Payload;
 using BancoDoBrasil.Formatting;
 using BancoDoBrasil.Exceptions;
 using BancoDoBrasil.Serialization;
-using System.Text.Json.Serialization;
 
 namespace BancoDoBrasil.Services;
 
 public sealed class BoletoService
 {
     private readonly BancoDoBrasilHttpClient _client;
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition =
-            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-    };
 
     public BoletoService(BancoDoBrasilHttpClient client)
     {
@@ -32,84 +24,77 @@ public sealed class BoletoService
         RegistrarBoletoRequest request,
         CancellationToken ct)
     {
-        // Validação estrutural 
+        PrepararRequest(request);
+
+        var jsonPayload = SerializarPayload(request);
+        RegistrarBoletoPayloadValidator.Validate(jsonPayload);
+
+        var responseJson = await EnviarParaBbAsync(jsonPayload, ct);
+        return DesserializarResposta(responseJson);
+    }
+
+    private static void PrepararRequest(RegistrarBoletoRequest request)
+    {
         RegistrarBoletoStructureValidator.Validate(request);
-
-        // Validação de regras do BB
-        RegistrarBoletoBusinessValidator.Validate(request);
-        DescontoBusinesValidator.ValidarDesconto(request);
-        MultaBussinessValidator.ValidarMulta(request);
-        PagadorBusinessValidator.ValidarPagador(request);
-        BeneficiarioBusinessValidator.ValidarBeneficiario(request.beneficiarioFinal);
-
         MontarNumeroTituloCliente(request);
+        ExecutarValidacoesDeNegocio(request);
+        AplicarFormatacoesStringBb(request);
+    }
 
-        // Formatação padrão BB (ANTES de serializar)
-        AplicarFormatacoesBb(request);
+    private static string SerializarPayload(RegistrarBoletoRequest request)
+    {
+        return JsonSerializer.Serialize(request, JsonOptions);
+    }
 
-        // Validação do payload final (JSON)
-        RegistrarBoletoPayloadValidator.Validate(request, JsonOptions);
-
-        // Montagem do request HTTP
+    private async Task<string> EnviarParaBbAsync(
+        string jsonPayload,
+        CancellationToken ct)
+    {
         var httpRequest = new HttpRequestMessage(
             HttpMethod.Post,
             "boletos")
         {
-            Content = JsonContent.Create(request, options: JsonOptions)
+            Content = new StringContent(
+                jsonPayload,
+                System.Text.Encoding.UTF8,
+                "application/json")
         };
 
-        // Envio para o BB
         var response = await _client.SendAsync(httpRequest, ct);
         var responseBody = await response.Content.ReadAsStringAsync(ct);
 
-        // Tratamento de erro BB
         if (!response.IsSuccessStatusCode)
         {
             throw new BancoDoBrasilIntegrationException(
                 $"Erro BB {(int)response.StatusCode}: {responseBody}");
         }
 
-        // Desserialização segura
+        return responseBody;
+    }
+
+    private static RegistrarBoletoResponse DesserializarResposta(string json)
+    {
         return JsonSerializer.Deserialize<RegistrarBoletoResponse>(
-            responseBody,
+            json,
             JsonOptions)!;
     }
 
-    /// <summary>
-    /// Centraliza TODA formatação exigida pelo BB
-    /// </summary>
-    private static void AplicarFormatacoesBb(RegistrarBoletoRequest r)
+    private static void ExecutarValidacoesDeNegocio(RegistrarBoletoRequest request)
     {
-        // Datas - converter DateTime para string no formato BB
-        string dataEmissao = BbDateFormatter.Format(r.dataEmissao); // Realizar o tratamento de datas.
-        string dataVencimento = BbDateFormatter.Format(r.dataVencimento);// Realizar o tratamento de datas.
-
-        // Strings principais
-        if (!string.IsNullOrWhiteSpace(r.campoUtilizacaoBeneficiario))
-        {
-            r.campoUtilizacaoBeneficiario =
-                BbStringFormatter.Normalize(r.campoUtilizacaoBeneficiario, 25);
-        }
-
-        // Pagador
-        r.pagador.nome =
-            BbStringFormatter.Normalize(r.pagador.nome, 60);
-
-        r.pagador.endereco =
-            BbStringFormatter.Normalize(r.pagador.endereco, 60);
-
-        r.pagador.bairro =
-            BbStringFormatter.Normalize(r.pagador.bairro, 30);
-
-        r.pagador.cidade =
-            BbStringFormatter.Normalize(r.pagador.cidade, 30);
-
-        r.pagador.uf =
-            BbStringFormatter.Normalize(r.pagador.uf, 2);
-
-        r.mensagemBloquetoOcorrencia = BbStringFormatter.NormalizarMensagemBloqueto(r.mensagemBloquetoOcorrencia);    
+        RegistrarBoletoBusinessValidator.Validate(request);
+        DescontoBusinesValidator.ValidarDesconto(request);
+        MultaBussinessValidator.ValidarMulta(request);
+        PagadorBusinessValidator.ValidarPagador(request);
+        BeneficiarioBusinessValidator.ValidarBeneficiario(request.beneficiarioFinal);
     }
-
+    
+    private static void AplicarFormatacoesStringBb(RegistrarBoletoRequest r)
+    {
+        r.campoUtilizacaoBeneficiario = BbStringFormatter.NormalizeUpper(r.campoUtilizacaoBeneficiario, 25);
+        r.mensagemBloquetoOcorrencia = BbStringFormatter.NormalizarMensagemBloqueto(r.mensagemBloquetoOcorrencia);
+        r.pagador.uf = BbStringFormatter.NormalizeUpper(r.pagador.uf, 2);
+        r.indicadorPix = BbStringFormatter.NormalizeUpper(r.indicadorPix, 1);
+    }
 
     private static void MontarNumeroTituloCliente(RegistrarBoletoRequest r)
     {
@@ -119,4 +104,14 @@ public sealed class BoletoService
         r.numeroTituloCliente = $"000{convenio}{controle}";
     }
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition =
+            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        Converters =
+        {
+            new BbDateJsonConverter()
+        }
+    };
 }

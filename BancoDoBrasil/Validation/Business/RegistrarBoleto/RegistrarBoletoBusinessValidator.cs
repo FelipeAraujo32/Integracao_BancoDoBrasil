@@ -5,7 +5,7 @@ using BancoDoBrasil.Exceptions;
 
 namespace BancoDoBrasil.Validation.Business;
 
-internal static class RegistrarBoletoBusinessValidator
+public static class RegistrarBoletoBusinessValidator
 {
     public static void Validate(RegistrarBoletoRequest r)
     {
@@ -15,7 +15,7 @@ internal static class RegistrarBoletoBusinessValidator
         ValidarCodigoModalidade(r);
         ValidarDataEmissao(r);
         ValidarDataVencimento(r);
-        ValidarValorOriginal(r.valorOriginal, r.valorAbatimento, r.desconto?.valor, r.segundoDesconto?.valor, r.terceiroDesconto?.valor);
+        ValidarValorOriginal(r.valorOriginal, r.desconto?.valor, r.segundoDesconto?.valor, r.terceiroDesconto?.valor, r.valorAbatimento);
         ValidarValorAbatimento(r.valorAbatimento);
         ValidarQtdDiasProtesto(r.quantidadeDiasProtesto);
         ValidarIndicadorAceite(r.indicadorAceiteTituloVencido);
@@ -24,6 +24,7 @@ internal static class RegistrarBoletoBusinessValidator
         ValidarCodigoTipoTitulo(r.codigoTipoTitulo, r.numeroCarteira);
         ValidarIndicadorPermissaoRecebimentoParcial(r.indicadorPermissaoRecebimentoParcial);
         ValidarNumeroTituloBeneficiario(r.numeroTituloBeneficiario);
+        ValidarCampoUtilizacaoBeneficiario(r.campoUtilizacaoBeneficiario);
         ValidarNumeroControle(r.numeroControle);    
     }
 
@@ -198,6 +199,14 @@ internal static class RegistrarBoletoBusinessValidator
             throw new BancoDoBrasilValidationException(
                 "numeroTituloBeneficiario contém caracteres inválidos.");
     }
+  
+    private static void ValidarCampoUtilizacaoBeneficiario(string? campoUtilizacaoBeneficiario)
+    {
+        if (!string.IsNullOrEmpty(campoUtilizacaoBeneficiario) && campoUtilizacaoBeneficiario.Length > 25)
+            throw new BancoDoBrasilValidationException(
+                $"{campoUtilizacaoBeneficiario} máximo: 25 caracteres."
+            );
+    }
     private static void ValidarNumeroControle(long numeroControle)
     {
         if (numeroControle <= 0)
@@ -208,5 +217,6 @@ internal static class RegistrarBoletoBusinessValidator
             throw new BancoDoBrasilValidationException(
                 "NumeroControle deve ter no máximo 10 dígitos");
     }
+    
     
 }
