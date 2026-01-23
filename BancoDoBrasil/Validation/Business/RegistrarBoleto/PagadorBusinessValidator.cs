@@ -53,17 +53,17 @@ public static class PagadorBusinessValidator
     private static void validarCep(PagadorDto p)
     {
         if (p.cep <=0)
-            throw new ArgumentException("CEP inválido.");
+            throw new BancoDoBrasilValidationException("CEP inválido.");
     
     }
 
     private static void ValidarUf(PagadorDto p)
     {
         if (string.IsNullOrEmpty(p.uf) || p.uf.Length != 2)
-            throw new ArgumentException("UF deve ter exatamente 2 caracteres.");
+            throw new BancoDoBrasilValidationException("UF deve ter exatamente 2 caracteres.");
 
         if (!EstadosValidos.Contains(p.uf.ToUpperInvariant()))
-            throw new ArgumentException($"UF inválida: {p.uf}.");    
+            throw new BancoDoBrasilValidationException($"UF inválida: {p.uf}.");    
     }
 
     private static readonly HashSet<string> EstadosValidos = new()

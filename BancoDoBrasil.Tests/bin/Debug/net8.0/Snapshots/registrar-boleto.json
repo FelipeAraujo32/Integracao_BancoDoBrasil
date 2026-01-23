@@ -1,0 +1,31 @@
+{
+  "numeroConvenio":1234567,
+  "numeroCarteira":17,
+  "numeroVariacaoCarteira":19,
+  "codigoModalidade":1,
+  "dataEmissao":"22.01.2026",
+  "dataVencimento":"27.01.2026",
+  "valorOriginal":100,
+  "indicadorAceiteTituloVencido":"N",
+  "numeroDiasLimiteRecebimento":0,
+  "codigoAceite":"A",
+  "codigoTipoTitulo":2,
+  "descricaoTipoTitulo":"DM",
+  "indicadorPermissaoRecebimentoParcial":"N",
+  "numeroTituloBeneficiario":"TITULO123",
+  "campoUtilizacaoBeneficiario":"",
+  "numeroTituloCliente":"00012345670123456789",
+  "mensagemBloquetoOcorrencia":"",
+  "pagador":{
+    "tipoInscricao":1,
+    "numeroInscricao":12345678901,
+    "nome":"PAGADOR TESTE",
+    "endereco":"RUA A",
+    "cep":12345678,
+    "cidade":"SAO PAULO",
+    "bairro":"CENTRO",
+    "uf":"SP",
+    "telefone":"11999999999"
+  },
+  "indicadorPix":"N"
+}

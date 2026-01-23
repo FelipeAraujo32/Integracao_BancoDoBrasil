@@ -95,7 +95,7 @@ public static class RegistrarBoletoBusinessValidator
     
      private static void ValidarQtdDiasProtesto(int? dias)
     {
-        if(dias == 0)
+        if(!dias.HasValue || dias == 0)
             return;
 
         bool valido =

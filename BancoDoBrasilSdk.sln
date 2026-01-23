@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BancoDoBrasil", "BancoDoBrasil\BancoDoBrasil.csproj", "{E5D4B988-B40D-4E8C-8571-75F6006AADBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BancoDoBrasil.Tests", "BancoDoBrasil.Tests\BancoDoBrasil.Tests.csproj", "{330C02D2-52FA-468A-AC8B-5A5FF04B74FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BancoDoBrasil.Tests", "BancoDoBrasil.Tests\BancoDoBrasil.Tests.csproj", "{AE87416F-DA3F-4561-B4B4-52C23759270A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,5 +28,9 @@ Global
 		{330C02D2-52FA-468A-AC8B-5A5FF04B74FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{330C02D2-52FA-468A-AC8B-5A5FF04B74FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{330C02D2-52FA-468A-AC8B-5A5FF04B74FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{877C2052-88A0-4AD4-BCCB-B6E976E4F959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{877C2052-88A0-4AD4-BCCB-B6E976E4F959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{877C2052-88A0-4AD4-BCCB-B6E976E4F959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{877C2052-88A0-4AD4-BCCB-B6E976E4F959}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

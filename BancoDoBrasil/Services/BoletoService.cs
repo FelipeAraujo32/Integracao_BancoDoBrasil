@@ -13,9 +13,9 @@ namespace BancoDoBrasil.Services;
 
 public sealed class BoletoService
 {
-    private readonly BancoDoBrasilHttpClient _client;
+    private readonly IBancoDoBrasilHttpClient  _client;
 
-    public BoletoService(BancoDoBrasilHttpClient client)
+    public BoletoService(IBancoDoBrasilHttpClient  client)
     {
         _client = client;
     }

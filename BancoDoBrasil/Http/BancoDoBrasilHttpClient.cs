@@ -4,7 +4,7 @@ using BancoDoBrasil.Configuration;
 
 namespace BancoDoBrasil.Http;
 
-public sealed class BancoDoBrasilHttpClient
+public  class BancoDoBrasilHttpClient : IBancoDoBrasilHttpClient
 {
     private readonly HttpClient _http;
     private readonly BancoDoBrasilAuthService _auth;

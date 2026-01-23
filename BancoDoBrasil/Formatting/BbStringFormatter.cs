@@ -1,6 +1,8 @@
+using System.Text.RegularExpressions;
+
 namespace BancoDoBrasil.Formatting;
 
-internal static class BbStringFormatter
+public static class BbStringFormatter
 {
     public static string NormalizeUpper(string? value, int max)
     {
@@ -14,6 +16,7 @@ internal static class BbStringFormatter
         return string.Empty;
 
         mensagem = mensagem.Replace("\r", " ").Replace("\n", " ");
+        mensagem = Regex.Replace(mensagem, @"\s+", " ");
         mensagem = mensagem.Trim();
 
         if(mensagem.Length > 165)
